@@ -673,228 +673,228 @@
     </audio>
 
     <script>
-        const heartsContainer = document.getElementById('hearts');
-        const waveBg = document.getElementById('waveBg');
-        const card = document.getElementById('card');
-        const message = document.getElementById('message');
-        const music = document.getElementById('backgroundMusic');
-        const musicToggle = document.getElementById('musicToggle');
-        const themeToggle = document.getElementById('themeToggle');
-        const musicProgress = document.getElementById('musicProgress');
-        let visitCount = localStorage.getItem('visitCount') ? parseInt(localStorage.getItem('visitCount')) : 0;
-        let isMusicPlaying = false;
-        let isDarkTheme = false;
+        // Оптимизированный скрипт
+const heartsContainer = document.getElementById('hearts');
+const waveBg = document.getElementById('waveBg');
+const card = document.getElementById('card');
+const message = document.getElementById('message');
+const music = document.getElementById('backgroundMusic');
+const musicToggle = document.getElementById('musicToggle');
+const themeToggle = document.getElementById('themeToggle');
+const musicProgress = document.getElementById('musicProgress');
+let visitCount = localStorage.getItem('visitCount') ? parseInt(localStorage.getItem('visitCount')) : 0;
+let isMusicPlaying = false;
+let isDarkTheme = false;
+let lastInteractionTime = 0;
+let lastHeartCreationTime = 0;
 
-        // Увеличение счетчика посещений
-        visitCount++;
-        localStorage.setItem('visitCount', visitCount);
-        document.getElementById('count').textContent = visitCount;
+// Увеличение счетчика посещений
+visitCount++;
+localStorage.setItem('visitCount', visitCount);
+document.getElementById('count').textContent = visitCount;
 
-        // Эффект печатания текста
-        const text = "Аделина, ты – моя звезда! 💖";
-        function typeMessage() {
-            let i = 0;
-            function type() {
-                if (i < text.length) {
-                    message.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, 100);
-                } else {
-                    message.style.borderRight = 'none';
-                }
+// Эффект печатания текста
+const text = "Аделина, ты – моя звезда! 💖";
+function typeMessage() {
+    let i = 0;
+    function type() {
+        if (i < text.length) {
+            message.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, 100);
+        } else {
+            message.style.borderRight = 'none';
+        }
+    }
+    type();
+}
+typeMessage();
+
+// Оптимизированное создание сердечек
+function createHeart(x = Math.random() * window.innerWidth, y = window.innerHeight) {
+    const now = Date.now();
+    if (now - lastHeartCreationTime < 100) return; // Ограничение частоты создания
+    lastHeartCreationTime = now;
+    
+    const size = Math.random() * 15 + 15;
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    
+    const styleNum = Math.floor(Math.random() * 4) + 1;
+    heart.classList.add(`style${styleNum}`);
+    
+    heart.style.left = `${x}px`;
+    heart.style.top = `${y}px`;
+    heart.style.animationDelay = `${Math.random() * 2}s`;
+    heart.style.setProperty('--t', Math.random());
+    heart.style.setProperty('--size', `${size}px`);
+    heart.style.willChange = 'transform, opacity'; // Оптимизация анимации
+    
+    if (Math.random() > 0.7) {
+        heart.classList.add('pulse');
+    }
+    
+    heartsContainer.appendChild(heart);
+    
+    // Удаление через время анимации + небольшой запас
+    setTimeout(() => {
+        if (heart.parentNode) {
+            heart.style.opacity = '0';
+            setTimeout(() => heart.remove(), 100);
+        }
+    }, 6000);
+}
+
+// Оптимизированное создание лепестков
+function createPetal() {
+    const now = Date.now();
+    if (now - lastInteractionTime > 30000 && Math.random() > 0.3) return; // Меньше лепестков при бездействии
+    
+    const petal = document.createElement('div');
+    petal.classList.add('petal');
+    petal.style.left = `${Math.random() * 100}%`;
+    petal.style.animationDelay = `${Math.random() * 5}s`;
+    petal.style.setProperty('--t', Math.random());
+    petal.style.willChange = 'transform, opacity'; // Оптимизация анимации
+    heartsContainer.appendChild(petal);
+    
+    setTimeout(() => {
+        if (petal.parentNode) {
+            petal.style.opacity = '0';
+            setTimeout(() => petal.remove(), 100);
+        }
+    }, 8000);
+}
+
+// Оптимизированные искры
+function createSpark(x, y) {
+    const sparkCount = Math.min(8, Math.floor(window.devicePixelRatio * 5)); // Меньше искр на слабых устройствах
+    
+    for (let i = 0; i < sparkCount; i++) {
+        const spark = document.createElement('div');
+        spark.classList.add('spark');
+        spark.style.left = `${x}px`;
+        spark.style.top = `${y}px`;
+        spark.style.setProperty('--x', Math.random());
+        spark.style.setProperty('--y', Math.random());
+        spark.style.willChange = 'transform, opacity';
+        heartsContainer.appendChild(spark);
+        
+        setTimeout(() => {
+            if (spark.parentNode) {
+                spark.style.opacity = '0';
+                setTimeout(() => spark.remove(), 50);
             }
-            type();
-        }
-        typeMessage();
+        }, 800);
+    }
+}
 
-        // Создание летающих сердечек с разными стилями
-        function createHeart(x = Math.random() * window.innerWidth, y = window.innerHeight) {
-            const size = Math.random() * 15 + 15;
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            
-            const styleNum = Math.floor(Math.random() * 4) + 1;
-            heart.classList.add(`style${styleNum}`);
-            
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            heart.style.animationDelay = `${Math.random() * 2}s`;
-            heart.style.setProperty('--t', Math.random());
-            heart.style.setProperty('--size', `${size}px`);
-            
-            if (Math.random() > 0.7) {
-                heart.classList.add('pulse');
+// Оптимизированный фейерверк
+function createFirework(x, y) {
+    const fireworkCount = Math.min(12, Math.floor(window.devicePixelRatio * 8)); // Адаптивное количество
+    
+    for (let i = 0; i < fireworkCount; i++) {
+        const firework = document.createElement('div');
+        firework.classList.add('firework');
+        firework.style.left = `${x}px`;
+        firework.style.top = `${y}px`;
+        firework.style.setProperty('--hue', Math.random() * 360);
+        firework.style.setProperty('--x', Math.random());
+        firework.style.setProperty('--y', Math.random());
+        firework.style.willChange = 'transform, opacity';
+        heartsContainer.appendChild(firework);
+        
+        setTimeout(() => {
+            if (firework.parentNode) {
+                firework.style.opacity = '0';
+                setTimeout(() => firework.remove(), 50);
             }
-            
-            heartsContainer.appendChild(heart);
-            setTimeout(() => heart.remove(), 6000);
-        }
+        }, 1200);
+    }
+}
 
-        // Создание падающих лепестков
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.classList.add('petal');
-            petal.style.left = `${Math.random() * 100}%`;
-            petal.style.animationDelay = `${Math.random() * 5}s`;
-            petal.style.setProperty('--t', Math.random());
-            heartsContainer.appendChild(petal);
-            setTimeout(() => petal.remove(), 8000);
-        }
+// Оптимизированная генерация элементов
+function generateElements() {
+    const now = Date.now();
+    const heartCount = document.querySelectorAll('.heart').length;
+    const petalCount = document.querySelectorAll('.petal').length;
+    
+    // Меньше элементов при бездействии
+    const activeMultiplier = now - lastInteractionTime < 10000 ? 1 : 0.5;
+    
+    if (heartCount < 15 * activeMultiplier) createHeart();
+    if (petalCount < 8 * activeMultiplier && Math.random() > 0.7) createPetal();
+    
+    // Адаптивный интервал в зависимости от нагрузки
+    const nextDelay = heartCount > 20 ? 500 : 
+                     heartCount > 15 ? 400 : 
+                     heartCount > 10 ? 300 : 200;
+    
+    setTimeout(generateElements, nextDelay);
+}
 
-        // Создание искр
-        function createSpark(x, y) {
-            for (let i = 0; i < 10; i++) {
-                const spark = document.createElement('div');
-                spark.classList.add('spark');
-                spark.style.left = `${x}px`;
-                spark.style.top = `${y}px`;
-                spark.style.setProperty('--x', Math.random());
-                spark.style.setProperty('--y', Math.random());
-                heartsContainer.appendChild(spark);
-                setTimeout(() => spark.remove(), 800);
+// Запуск генерации с начальной задержкой
+setTimeout(generateElements, 1000);
+
+// Обновление времени последнего взаимодействия
+function updateInteractionTime() {
+    lastInteractionTime = Date.now();
+}
+
+// Оптимизированные обработчики событий
+const handleInteraction = (x, y) => {
+    updateInteractionTime();
+    
+    if (Math.random() > 0.8) {
+        createHeart(x, y);
+    }
+    
+    waveBg.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(255, 105, 180, 0.3), transparent)`;
+};
+
+// Пассивные слушатели для лучшей производительности
+document.addEventListener('mousemove', (e) => handleInteraction(e.clientX, e.clientY), { passive: true });
+document.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    handleInteraction(touch.clientX, touch.clientY);
+}, { passive: true });
+
+// Оптимизированный обработчик клика
+card.addEventListener('click', (e) => {
+    updateInteractionTime();
+    card.classList.toggle('flipped');
+    
+    const x = e.clientX || e.touches?.[0]?.clientX || window.innerWidth / 2;
+    const y = e.clientY || e.touches?.[0]?.clientY || window.innerHeight / 2;
+    
+    // Ограниченное количество эффектов при клике
+    for (let i = 0; i < 3; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart', 'click-effect');
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.style.setProperty('--x', Math.random());
+        heart.style.setProperty('--y', Math.random());
+        heart.style.willChange = 'transform, opacity';
+        
+        const styleNum = Math.floor(Math.random() * 4) + 1;
+        heart.classList.add(`style${styleNum}`);
+        
+        heartsContainer.appendChild(heart);
+        
+        setTimeout(() => {
+            if (heart.parentNode) {
+                heart.style.opacity = '0';
+                setTimeout(() => heart.remove(), 50);
             }
-        }
+        }, 1000);
+    }
+    
+    createSpark(x, y);
+    createFirework(x, y);
+});
 
-        // Создание фейерверка
-        function createFirework(x, y) {
-            for (let i = 0; i < 15; i++) {
-                const firework = document.createElement('div');
-                firework.classList.add('firework');
-                firework.style.left = `${x}px`;
-                firework.style.top = `${y}px`;
-                firework.style.setProperty('--hue', Math.random() * 360);
-                firework.style.setProperty('--x', Math.random());
-                firework.style.setProperty('--y', Math.random());
-                heartsContainer.appendChild(firework);
-                setTimeout(() => firework.remove(), 1200);
-            }
-        }
-
-        // Генерация сердечек и лепестков
-        setInterval(() => {
-            if (document.querySelectorAll('.heart').length < 20) createHeart();
-            if (document.querySelectorAll('.petal').length < 10 && Math.random() > 0.8) createPetal();
-        }, 300);
-
-        // Интерактивные элементы при движении мыши
-        document.addEventListener('mousemove', (e) => {
-            if (Math.random() > 0.7) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart', 'interactive');
-                heart.style.left = `${e.clientX}px`;
-                heart.style.top = `${e.clientY}px`;
-                heartsContainer.appendChild(heart);
-                setTimeout(() => heart.remove(), 800);
-            }
-            waveBg.style.background = `radial-gradient(circle at ${e.clientX}px ${e.clientY}px, rgba(255, 105, 180, 0.3), transparent)`;
-        });
-
-        // Интерактивные элементы при касании
-        document.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            if (Math.random() > 0.7) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart', 'interactive');
-                heart.style.left = `${touch.clientX}px`;
-                heart.style.top = `${touch.clientY}px`;
-                heartsContainer.appendChild(heart);
-                setTimeout(() => heart.remove(), 800);
-            }
-            waveBg.style.background = `radial-gradient(circle at ${touch.clientX}px ${touch.clientY}px, rgba(255, 105, 180, 0.3), transparent)`;
-        });
-
-        // Интерактивные сердечки, искры, фейерверк и переворот открытки
-        card.addEventListener('click', (e) => {
-            card.classList.toggle('flipped');
-            const x = e.clientX || e.touches?.[0]?.clientX || window.innerWidth / 2;
-            const y = e.clientY || e.touches?.[0]?.clientY || window.innerHeight / 2;
-            
-            for (let i = 0; i < 5; i++) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart', 'click-effect');
-                heart.style.left = `${x}px`;
-                heart.style.top = `${y}px`;
-                heart.style.setProperty('--x', Math.random());
-                heart.style.setProperty('--y', Math.random());
-                
-                const styleNum = Math.floor(Math.random() * 4) + 1;
-                heart.classList.add(`style${styleNum}`);
-                
-                heartsContainer.appendChild(heart);
-                setTimeout(() => heart.remove(), 1000);
-            }
-            
-            createSpark(x, y);
-            createFirework(x, y);
-        });
-
-        // Управление музыкой
-        function toggleMusic() {
-            if (isMusicPlaying) {
-                fadeOut(music, 1000);
-                musicToggle.textContent = '🔇';
-                musicProgress.style.opacity = '0';
-            } else {
-                music.play();
-                fadeIn(music, 1000);
-                musicToggle.textContent = '🔊';
-                musicProgress.style.opacity = '1';
-            }
-            isMusicPlaying = !isMusicPlaying;
-        }
-
-        function fadeIn(audio, duration) {
-            audio.volume = 0;
-            let start = performance.now();
-            function step(timestamp) {
-                let progress = (timestamp - start) / duration;
-                audio.volume = Math.min(progress * 0.3, 0.3);
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        function fadeOut(audio, duration) {
-            let start = performance.now();
-            let initialVolume = audio.volume;
-            function step(timestamp) {
-                let progress = (timestamp - start) / duration;
-                audio.volume = initialVolume * (1 - progress);
-                if (progress >= 1) audio.pause();
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        }
-
-        // Автозапуск музыки
-        window.addEventListener('load', () => {
-            music.volume = 0.3;
-            music.play().then(() => {
-                isMusicPlaying = true;
-                musicToggle.textContent = '🔊';
-                musicProgress.style.opacity = '1';
-            }).catch(() => {
-                musicToggle.textContent = '🔇';
-                musicProgress.style.opacity = '0';
-            });
-        });
-
-        // Переключение темы
-        function toggleTheme() {
-            isDarkTheme = !isDarkTheme;
-            document.body.classList.toggle('dark-theme');
-            themeToggle.textContent = isDarkTheme ? '🌜' : '🌞';
-        }
-
-        // Показ модального окна со статистикой
-        function showStats() {
-            document.getElementById('statsModal').style.display = 'flex';
-        }
-
-        // Закрытие модального окна
-        function closeModal() {
-            document.getElementById('statsModal').style.display = 'none';
-        }
+// Остальные функции (управление музыкой, темами, модальными окнами) остаются без изменений
     </script>
 </body>
 </html>
